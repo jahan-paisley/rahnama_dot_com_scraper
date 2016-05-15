@@ -12,6 +12,7 @@ require 'date'
 Capybara.register_driver :selenium_firefox_nojs do |app|
   profile = Selenium::WebDriver::Firefox::Profile.new
   profile["javascript.enabled"] = false
+  profile["permissions.default.image"] = '2'
   Capybara::Selenium::Driver.new(app, :browser => :firefox, :profile => profile)
 end
 
@@ -24,14 +25,18 @@ class ScrapRahnama < Thor
   include Capybara::DSL
 
   desc "rahnama.com", "Run the Rahnama.com Task"
+
   def start
     @results = []
     visit('/')
     elem1 = first(:css, "a[href*='فروش-املاك-مسكوني']")
     window1= window_opened_by { elem1.click }
-    window2 = scrap_specific_page(window1, 'فروش-آپارتمان-76-تا-80-متر')
-    scrap_pages(window2)
-    write_results
+    links= IO.readlines('links.txt')
+    links.each do |link|
+      window2 = scrap_specific_page(window1, link.chomp)
+      scrap_pages(window2)
+      write_results link
+    end
   end
 
   no_commands {
@@ -53,7 +58,8 @@ class ScrapRahnama < Thor
     def scrap_specific_page(window1, search_element)
       window2= nil
       within_window window1 do
-        expect(page).to have_css("a[href*='#{search_element}']")
+        #expect(page).to have_css("a[href*='#{search_element}']")
+        #binding.pry if search_element == nil or search_element == ''
         elem2= find(:css, "table a[href*='#{search_element}']")
         window2= window_opened_by { elem2.click }
       end
@@ -62,8 +68,8 @@ class ScrapRahnama < Thor
   }
 
   no_commands {
-    def write_results
-      filename = __dir__+ "/"+ Time.new.strftime("%F %T").gsub(':', '-') + '.txt'
+    def write_results link
+      filename = __dir__+ "/#{link}"+ Time.new.strftime("%F %T").gsub(':', '-') + '.txt'
       IO.write(filename, @results.join("\n"))
     end
   }
