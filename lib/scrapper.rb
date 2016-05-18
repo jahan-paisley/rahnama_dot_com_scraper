@@ -4,6 +4,7 @@ require 'capybara/dsl'
 require 'capybara/rspec'
 require "rspec/expectations"
 require "rspec/matchers"
+require "lib/result_processor"
 
 class Scrapper
   include RSpec::Matchers

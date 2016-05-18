@@ -5,9 +5,9 @@ db = SQLite3::Database.new "data/people_ads.db"
 
 # Create a table
 rows = db.execute <<-SQL
-  create table people (id INTEGER PRIMARY KEY AUTOINCREMEN, name varchar(30), email varchar(30));
+  create table people (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(30), email varchar(30));
   create table phones (no varchar(11) PRIMARY KEY, people_id integer );
-  create table ads(id INTEGER PRIMARY KEY AUTOINCREMEN, people_id integer, ad_text varchar(256), ad_text_filtered varchar(256))
+  create table ads(id INTEGER PRIMARY KEY AUTOINCREMENT, people_id integer, ad_text varchar(256), ad_text_filtered varchar(256))
 SQL
 
 # Execute a few inserts
