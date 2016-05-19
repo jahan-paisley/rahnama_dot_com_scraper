@@ -4,6 +4,7 @@ require "thor"
 require "./lib/scrapper"
 require "./lib/capybara_config"
 require "./lib/sqlite_config"
+require "./lib/result_processor"
 
 class ScrapRahnama < Thor
   desc "rahnama.com", "Run the Rahnama.com Task"
