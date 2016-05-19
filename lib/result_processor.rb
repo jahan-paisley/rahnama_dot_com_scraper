@@ -40,8 +40,11 @@ class ResultProcessor
 
   def extract_name(ad)
     if ad.key? :contact
-      adcontact_scan = ad[:contact].scan(/[^0-9]/)
-      adcontact_scan[0] unless adcontact_scan.empty?
+      adcontact_scan = ad[:contact].scan(/\b\p{L}+\b/)
+      adcontact_scan_join = adcontact_scan.join(' ')
+      if !adcontact_scan.empty? and adcontact_scan_join.length>=3 and adcontact_scan_join
+        return adcontact_scan_join
+      end
     end
   end
 
