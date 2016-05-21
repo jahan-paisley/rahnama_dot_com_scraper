@@ -6,4 +6,5 @@ gem 'rspec'
 gem 'sqlite3'
 gem 'telegram-bot-ruby'
 gem 'pry'
+gem 'jalalidate'
 

@@ -20,6 +20,7 @@ class Rahnama < Thor
   desc 'send_telegram', 'Send ads to Telegram Channel'
   def send
     bot= TelegramBot.new
+    bot.send
   end
 end
 
