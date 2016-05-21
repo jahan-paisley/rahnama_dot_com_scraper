@@ -56,7 +56,12 @@ class ResultProcessor
         people_id = $db.execute("SELECT last_insert_rowid() FROM people").first.first
       end
       res['phones'].each { |ph| $db.execute("INSERT OR IGNORE into phones(no, people_id) values (? , ?)", ph, people_id) }
-      $db.execute("insert or ignore into ads(people_id, ad_text) values (? , ?)", people_id, res['ad_text'])
+      sql= <<-SQL
+        insert or replace into
+            ads(people_id, ad_text, counts)
+            values (:pid , :ad, COALESCE((select counts from ads where people_id = :pid and ad_text= :ad),0) + 1)
+      SQL
+      $db.execute(sql, "pid" => people_id, "ad" => res['ad_text'])
     end
   end
 
