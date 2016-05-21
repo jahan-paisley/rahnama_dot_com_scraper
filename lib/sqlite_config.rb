@@ -1,7 +1,7 @@
-require "sqlite3"
+require 'sqlite3'
 
 # Open a database
-$db = SQLite3::Database.new "data/people_ads.db"
+$db = SQLite3::Database.new 'data/people_ads.db'
 
 # Create a table
 $db.execute <<-SQL
@@ -31,10 +31,10 @@ SQL
 
 # Execute a few inserts
 # {
-#     "one" => 1,
-#     "two" => 2,
+#     'one' => 1,
+#     'two' => 2,
 # }.each do |pair|
-#   $db.execute "insert into numbers values ( ?, ? )", pair
+#   $db.execute 'insert into numbers values ( ?, ? )', pair
 # end
 
 # Create another table with multiple columns
@@ -49,10 +49,10 @@ SQL
 # SQL
 
 # Execute inserts with parameter markers
-# $db.execute("INSERT INTO students (name, email, grade, blog)
-#             VALUES (?, ?, ?, ?)", ["Jane", "me@janedoe.com", "A", "http://blog.janedoe.com"])
+# $db.execute('INSERT INTO students (name, email, grade, blog)
+#             VALUES (?, ?, ?, ?)', ['Jane', 'me@janedoe.com', 'A', 'http://blog.janedoe.com'])
 #
 # Find a few rows
-# $db.execute( "select * from numbers" ) do |row|
+# $db.execute( 'select * from numbers' ) do |row|
 #   p row
 # end

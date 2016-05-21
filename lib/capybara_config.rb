@@ -9,8 +9,8 @@ class CapybaraConfig
 
     Capybara.register_driver :selenium_firefox_nojs do |app|
       profile = Selenium::WebDriver::Firefox::Profile.new
-      profile["javascript.enabled"] = false
-      profile["permissions.default.image"] = '2'
+      profile['javascript.enabled'] = false
+      profile['permissions.default.image'] = '2'
       Capybara::Selenium::Driver.new(app, :browser => :firefox, :profile => profile)
     end
   end

@@ -5,22 +5,23 @@ class ResultProcessor
   end
 
   def write_results
-    # filename = __dir__+ "/#{link}"+ Time.new.strftime("%F %T").gsub(':', '-') + '.txt'
+    # filename = __dir__+ '/#{link}'+ Time.new.strftime('%F %T').gsub(':', '-') + '.txt'
     @results.each_key do |key|
       json_results= []
       @results[key].each do |item|
-        json_results << process_item(item)
+        json_results << process_item(item, key)
       end
       insert json_results
     end
   end
 
-  def process_item ad
+  def process_item ad, key
     result = Hash.new
     result['email'] = extract_email ad
     result['phones'] = extract_phones ad
     result['name'] = extract_name ad
     result['ad_text'] = ad[:ad_text]
+    result['category'] = key
     result
   end
 
@@ -52,16 +53,17 @@ class ResultProcessor
     json_results.each do |res|
       people_id= res['phones'].map { |ph| $db.execute('select people_id from phones where no = ?', ph) }.flatten.first
       if people_id.nil?
-        $db.execute("INSERT INTO people (name, email) values (? , ?);", res['name'], res['email'])
-        people_id = $db.execute("SELECT last_insert_rowid() FROM people").first.first
+        $db.execute('INSERT INTO people (name, email) values (? , ?);', res['name'], res['email'])
+        people_id = $db.execute('SELECT last_insert_rowid() FROM people').first.first
       end
-      res['phones'].each { |ph| $db.execute("INSERT OR IGNORE into phones(no, people_id) values (? , ?)", ph, people_id) }
+      res['phones'].each { |ph| $db.execute('INSERT OR IGNORE into phones(no, people_id) values (? , ?)', ph, people_id) }
       sql= <<-SQL
         insert or replace into
-            ads(people_id, ad_text, counts)
-            values (:pid , :ad, COALESCE((select counts from ads where people_id = :pid and ad_text= :ad),0) + 1)
+            ads(people_id, ad_text, counts, category)
+            values (:pid , :ad, COALESCE((select counts from ads where people_id = :pid and ad_text= :ad),0) + 1, :cat)
       SQL
-      $db.execute(sql, "pid" => people_id, "ad" => res['ad_text'])
+
+      $db.execute(sql, 'pid' => people_id, 'ad' => res['ad_text'], 'cat' => res['category'])
     end
   end
 
