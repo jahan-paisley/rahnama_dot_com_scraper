@@ -40,7 +40,15 @@ class Scrapper
 
   def extract_info
     find_all(:css, 'div.listing-summary1').map { |e|
-      {contact: e.find(:css, 'p span').text, ad_text: e.find(:css, 'p', :match => :prefer_exact).text}
+      puts e.text
+
+      begin
+        e_find = e.find(:css, 'p span')
+      rescue
+        e_find = e.find(:css, 'p')
+      end
+
+      {contact: e_find.text, ad_text: e.find(:css, 'p', :match => :prefer_exact).text}
     }
   end
 
@@ -52,4 +60,5 @@ class Scrapper
     end
     window2
   end
+
 end
