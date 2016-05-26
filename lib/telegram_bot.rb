@@ -6,7 +6,7 @@ class TelegramBot
   def initialize
     @@phones = $db.execute('select * from phones')
     last_sent= (IO.read("data/.last_sent_id") || '0' ).to_i
-    @@ads = $db.execute('select * from ads where id> ? order by id ', last_sent)
+    @@ads = $db.execute('select * from ads where id>= ? order by id ', last_sent)
     @@people = $db.execute('select * from people')
     @token = ENV['telegram_bot_token']
   end
@@ -17,7 +17,7 @@ class TelegramBot
         message = build_message(ad)
         begin
           bot.api.send_message(chat_id: '@hamshahri_ads', text: message)
-          sleep(rand(10))
+          sleep(4*rand(3))
         rescue
           IO.write("data/.last_sent_id", ad[0])
           exit
