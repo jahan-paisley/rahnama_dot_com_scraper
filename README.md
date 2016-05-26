@@ -6,10 +6,15 @@ A Simple Web Automation Script based on Capybara, RSpec and Thor.
 
 
 ### How to run:
+    ```bundle install```
+#### Scrap Ads
   ```
-  bundle install
-  chmod scrap_rahnama.thor a+x #make it executable
-  ./scrap_rahnama.thor start
+  thor rahnama:scrap_ads
+  ```
+#### Send telegram messages
+  ```
+  export telegram_bot_token="Your Telegram Bot Token"
+  thor rahnama:send
   ```
 
 ### Output
