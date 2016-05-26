@@ -17,7 +17,7 @@ class TelegramBot
         message = build_message(ad)
         begin
           bot.api.send_message(chat_id: '@hamshahri_ads', text: message)
-          sleep(5* rand(5))
+          sleep(2* rand(10))
         rescue
           IO.write("data/.last_sent_id", ad[0])
           exit
