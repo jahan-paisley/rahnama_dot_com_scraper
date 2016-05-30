@@ -1,6 +1,5 @@
 require 'jalalidate'
 require 'telegram/bot'
-require 'pry'
 require './lib/random_gaussian'
 
 class TelegramBot
@@ -33,8 +32,9 @@ class TelegramBot
         sleep(rand.abs)
       end
     end
-    IO.write("data/.last_sent_id", @@ads.last[0])
-  rescue
+    IO.write("data/.last_sent_id", @@ads.last[0]+1)
+  rescue Exception => e
+    puts e
     rand = @randoms.rand
     puts "sleeping longer for #{rand} ..."
     sleep(rand.abs)
@@ -45,12 +45,12 @@ class TelegramBot
 
   def build_message(ad)
     ad_text = ad[2].gsub(/\d{8,11}/, '')
+    name = @@people.select { |e| e[0] == ad[1] }.map { |e| e[1] }.first
     <<-MSG
 #{ad[0]}
-#{JalaliDate.new(Date.parse(ad[5])).strftime("#%A_%e_%b")}
-  #{ad_text}
-##{ad[6].gsub('-', '_')}
-#{@@people.select { |e| e[0] == ad[1] }.map { |e| e[1] }.first}
+#{JalaliDate.new(Date.parse(ad[5])).strftime("#%A_%e_%b")} #{"\nتعداد دفعات آگهی شدن: "+ ad[4].to_s if ad[4]>1}
+#{ad_text}
+##{ad[6].gsub('-', '_')} #{"\n" + name if name}
 #{ad[2].scan(/\d{8,11}/).map { |e| e.length == 8 ? '021'+e : e }.join(' ')}
     MSG
   end
