@@ -20,7 +20,7 @@ A Simple Web Automation Script based on Capybara, RSpec and Thor.
   ```
 
 ### Output
-Output will be save in a sqlite database
+Output will be save in a sqlite database and sent to this telegram channel: **https://telegram.me/hamshahri_ads**
 
 ### TODOS:
 * Save the logo and the filename of bmp file in ads and associate them with advertisers
