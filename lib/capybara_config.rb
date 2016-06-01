@@ -6,6 +6,7 @@ class CapybaraConfig
     Capybara.default_driver = :selenium_firefox_nojs
     Capybara.run_server = false
     Capybara.app_host = 'http://www.rahnama.com'
+    Capybara.default_max_wait_time = 15
 
     Capybara.register_driver :selenium_firefox_nojs do |app|
       profile = Selenium::WebDriver::Firefox::Profile.new
