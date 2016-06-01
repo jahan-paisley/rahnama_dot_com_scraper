@@ -1,6 +1,7 @@
 require 'jalalidate'
 require 'telegram/bot'
 require './lib/random_gaussian'
+require 'json'
 
 class TelegramBot
 
@@ -45,14 +46,20 @@ class TelegramBot
 
   def build_message(ad)
     ad_text = ad[2].gsub(/\d{8,11}/, '')
+    aread_codes= JSON.parse(IO.read(File.expand_path("../../data/area_codes.json", __FILE__)))
+    phone = ad[2].scan(/(?<![\d])\d{8}(?![\d])/).first
+    begin
+      area=aread_codes.values.flatten.select { |e| e.values.flatten.include?(phone[0...4].to_i) }.first.keys.first
+    rescue
+    end if phone
     name = @@people.select { |e| e[0] == ad[1] }.map { |e| e[1] }.first
     <<-MSG
 #{ad[0]}
 #{JalaliDate.new(Date.parse(ad[5])).strftime("#%A_%e_%b")} #{"\nتعداد دفعات آگهی شدن: "+ ad[4].to_s if ad[4]>1}
 #{ad_text}
-##{ad[6].gsub('-', '_')} #{"\n" + name if name}
+##{ad[6].gsub('-', '_')} #{"\n" + name if name} #{"\n#" + area.gsub(' ', '_') if area}
 #{ad[2].scan(/\d{8,11}/).map { |e| e.length == 8 ? '021'+e : e }.join(' ')}
-    MSG
+MSG
   end
 
 end
