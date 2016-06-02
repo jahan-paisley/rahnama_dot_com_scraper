@@ -1,17 +1,16 @@
 class ResultProcessor
+
   def initialize results
     @results= results
-    write_results
   end
 
   def write_results
-    # filename = __dir__+ '/#{link}'+ Time.new.strftime('%F %T').gsub(':', '-') + '.txt'
     @results.each_key do |key|
-      json_results= []
+      json_res= []
       @results[key].each do |item|
-        json_results << process_item(item, key)
+        json_res << process_item(item, key)
       end
-      insert json_results
+      insert json_res
     end
   end
 
@@ -21,6 +20,7 @@ class ResultProcessor
     result['phones'] = extract_phones ad
     result['name'] = extract_name ad
     result['ad_text'] = ad[:ad_text]
+    # result['ad_text_normalized'] = normalize ad[:ad_text]
     result['category'] = key
     result
   end
@@ -41,11 +41,8 @@ class ResultProcessor
 
   def extract_name(ad)
     if ad.key? :contact
-      adcontact_scan = ad[:contact].scan(/\b\p{L}+\b/)
-      adcontact_scan_join = adcontact_scan.join(' ')
-      if !adcontact_scan.empty? and adcontact_scan_join.length>=3 and adcontact_scan_join
-        return adcontact_scan_join
-      end
+      names = ad[:contact].scan(/\b\p{L}+\b/).join(' ')
+      return names if !names.empty? and names.length>=3
     end
   end
 
@@ -66,5 +63,9 @@ class ResultProcessor
       $db.execute(sql, 'pid' => people_id, 'ad' => res['ad_text'], 'cat' => res['category'])
     end
   end
+
+  # def normalize
+  #
+  # end
 
 end

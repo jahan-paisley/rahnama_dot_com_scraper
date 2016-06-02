@@ -23,7 +23,7 @@ class Scrapper
       window2 = open_page(window1, link.chomp)
       scrap_pages(window2, link)
     end
-    ResultProcessor.new @results
+    @results
   end
 
   def scrap_pages(window2, link)

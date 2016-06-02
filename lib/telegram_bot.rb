@@ -48,6 +48,7 @@ class TelegramBot
     ad_text = ad[2].gsub(/\d{8,11}/, '')
     aread_codes= JSON.parse(IO.read(File.expand_path("../../data/area_codes.json", __FILE__)))
     phone = ad[2].scan(/(?<![\d])\d{8}(?![\d])/).first
+    phone = phone || $db.execute('select no from phones where length(no)=8 and people_id = ?', ad[1]).first
     begin
       area=aread_codes.values.flatten.select { |e| e.values.flatten.include?(phone[0...4].to_i) }.first.keys.first
     rescue
@@ -59,7 +60,7 @@ class TelegramBot
 #{ad_text}
 ##{ad[6].gsub('-', '_')} #{"\n" + name if name} #{"\n#" + area.gsub(' ', '_') if area}
 #{ad[2].scan(/\d{8,11}/).map { |e| e.length == 8 ? '021'+e : e }.join(' ')}
-MSG
+    MSG
   end
 
 end
