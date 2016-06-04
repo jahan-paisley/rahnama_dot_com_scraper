@@ -48,19 +48,19 @@ class ResultProcessor
 
   def insert json_results
     json_results.each do |res|
-      people_id= res['phones'].map { |ph| $db.execute('select people_id from phones where no = ?', ph) }.flatten.first
-      if people_id.nil?
+      person_id= res['phones'].map { |ph| $db.execute('select person_id from phones where no = ?', ph) }.flatten.first
+      if person_id.nil?
         $db.execute('INSERT INTO people (name, email) values (? , ?);', res['name'], res['email'])
-        people_id = $db.execute('SELECT last_insert_rowid() FROM people').first.first
+        person_id = $db.execute('SELECT last_insert_rowid() FROM people').first.first
       end
-      res['phones'].each { |ph| $db.execute('INSERT OR IGNORE into phones(no, people_id) values (? , ?)', ph, people_id) }
+      res['phones'].each { |ph| $db.execute('INSERT OR IGNORE into phones(no, person_id) values (? , ?)', ph, person_id) }
       sql= <<-SQL
         insert or replace into
-            ads(people_id, ad_text, counts, category)
-            values (:pid , :ad, COALESCE((select counts from ads where people_id = :pid and ad_text= :ad),0) + 1, :cat)
+            ads(person_id, ad_text, counts, category)
+            values (:pid , :ad, COALESCE((select counts from ads where person_id = :pid and ad_text= :ad),0) + 1, :cat)
       SQL
 
-      $db.execute(sql, 'pid' => people_id, 'ad' => res['ad_text'], 'cat' => res['category'])
+      $db.execute(sql, 'pid' => person_id, 'ad' => res['ad_text'], 'cat' => res['category'])
     end
   end
 

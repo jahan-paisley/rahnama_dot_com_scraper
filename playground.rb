@@ -4,11 +4,11 @@ require 'sqlite3'
 
 #Setup elasticsearch and feed it to make it available on Kibana for easy exploration
 $db = SQLite3::Database.new 'data/people_ads.db'
-columns, *rows = $db.execute2( "select * from ads" )
-rows2= rows.map{|e| Hash[columns.zip e]}
+columns, *rows = $db.execute2( "select * from ads" );
+rows2= rows.map{|e| Hash[columns.zip e]};
 
 client = Elasticsearch::Client.new log: true
-rows2.each{|e| client.index(index: 'ads', type: 'ads', id:e["id"], body:e.merge({"date": Date.parse(e["timestamp"])}) )}
+rows2.each{|e| client.index(index: 'ads', type: 'ads', id:e["id"], body:e.merge({"date": Date.parse(e["date"])}) )};
 
 
 

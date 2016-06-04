@@ -14,9 +14,12 @@ SQL
 $db.execute <<-SQL
   create table IF NOT EXISTS ads
           (id INTEGER PRIMARY KEY AUTOINCREMENT,
-           people_id integer,
+           person_id integer,
            ad_text varchar(256),
-           ad_text_filtered varchar(256));
+           counts integer,
+           date timestamp,
+           category varchar(256)
+          );
 SQL
 
 $db.execute <<-SQL
@@ -26,5 +29,5 @@ SQL
 $db.execute <<-SQL
   create table IF NOT EXISTS phones
           (no varchar(11) PRIMARY KEY,
-           people_id integer)
+           person_id integer)
 SQL
