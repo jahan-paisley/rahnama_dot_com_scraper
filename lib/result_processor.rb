@@ -1,6 +1,6 @@
 class ResultProcessor
 
-  def initialize results
+  def initialize(results)
     @results= results
   end
 
@@ -14,7 +14,7 @@ class ResultProcessor
     end
   end
 
-  def process_item ad, key
+  def process_item(ad, key)
     result = Hash.new
     result['email'] = extract_email ad
     result['phones'] = extract_phones ad
@@ -34,8 +34,8 @@ class ResultProcessor
 
   def extract_phones(ad)
     if ad.key? :contact
-      adcontact_scan = ad[:contact].scan(/[0-9]{8,11}/)
-      adcontact_scan unless adcontact_scan.empty?
+      phones = ad[:contact].scan(/[0-9]{8,11}/)
+      phones unless phones.empty?
     end
   end
 
@@ -56,11 +56,11 @@ class ResultProcessor
       res['phones'].each { |ph| $db.execute('INSERT OR IGNORE into phones(no, person_id) values (? , ?)', ph, person_id) }
       sql= <<-SQL
         insert or replace into
-            ads(person_id, ad_text, counts, category)
-            values (:pid , :ad, COALESCE((select counts from ads where person_id = :pid and ad_text= :ad),0) + 1, :cat)
+            ads(person_id, ad_text, counts, category, date)
+            values (:pid , :ad, COALESCE((select counts from ads where person_id = :pid and ad_text= :ad),0) + 1, :cat, :date)
       SQL
 
-      $db.execute(sql, 'pid' => person_id, 'ad' => res['ad_text'], 'cat' => res['category'])
+      $db.execute(sql, pid: person_id, ad: res['ad_text'], cat: res['category'], date: Date.today)
     end
   end
 
