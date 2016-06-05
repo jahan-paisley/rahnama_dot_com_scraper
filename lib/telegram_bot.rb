@@ -27,7 +27,6 @@ class TelegramBot
         ad1=ad
         message = build_message(ad)
         bot.api.send_message(chat_id: '@hamshahri_ads', text: message)
-
         rand = @randoms.rand
         puts "sleeping for #{rand} ..."
         sleep(rand.abs)
@@ -36,6 +35,7 @@ class TelegramBot
     IO.write("data/.last_sent_id", @@ads.last[0]+1)
   rescue Exception => e
     puts e
+    puts e.backtrace
     rand = @randoms.rand
     puts "sleeping longer for #{rand} ..."
     sleep(rand.abs)
@@ -56,9 +56,9 @@ class TelegramBot
     name = @@people.select { |e| e[0] == ad[1] }.map { |e| e[1] }.first
     <<-MSG
 #{ad[0]}
-#{JalaliDate.new(Date.parse(ad[5])).strftime("#%A_%e_%b")} #{"\nتعداد دفعات آگهی شدن: "+ ad[4].to_s if ad[4]>1}
+#{JalaliDate.new(Date.parse(ad[4])).strftime("#%A_%e_%b")} #{"\nتعداد دفعات آگهی شدن: "+ ad[3].to_s if ad[3]>1}
 #{ad_text}
-##{ad[6].gsub('-', '_')} #{"\n" + name if name} #{"\n#" + area.gsub(' ', '_') if area}
+##{ad[5].gsub('-', '_')} #{"\n" + name if name} #{"\n#" + area.gsub(' ', '_') if area}
 #{ad[2].scan(/\d{8,11}/).map { |e| e.length == 8 ? '021'+e : e }.join(' ')}
     MSG
   end
