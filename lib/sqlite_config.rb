@@ -17,7 +17,7 @@ $db.execute <<-SQL
            person_id integer,
            ad_text varchar(256),
            counts integer,
-           date timestamp,
+           date datetime DEFAULT current_timestamp,
            category varchar(256)
           );
 SQL

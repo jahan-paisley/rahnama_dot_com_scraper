@@ -57,10 +57,10 @@ class ResultProcessor
       sql= <<-SQL
         insert or replace into
             ads(person_id, ad_text, counts, category, date)
-            values (:pid , :ad, COALESCE((select counts from ads where person_id = :pid and ad_text= :ad),0) + 1, :cat, :date)
+            values (:pid , :ad, COALESCE((select counts from ads where person_id = :pid and ad_text= :ad),0) + 1, :cat, current_timestamp)
       SQL
 
-      $db.execute(sql, pid: person_id, ad: res['ad_text'], cat: res['category'], date: Date.today)
+      $db.execute(sql, pid: person_id, ad: res['ad_text'], cat: res['category'])
     end
   end
 

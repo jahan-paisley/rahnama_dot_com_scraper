@@ -4,7 +4,7 @@ require 'jalalidate'
 
 $db = SQLite3::Database.new 'data/people_ads.db'
 columns, *rows = $db.execute2("select * from ads");
-rows2= rows.map { |e| Hash[columns.zip e] };
+prows= rows.map { |e| Hash[columns.zip e] };
 
 def build_new_hash e
   converted_map = e.map do |k, v|
@@ -20,7 +20,7 @@ end
 
 #Setup elasticsearch and feed it to make it available on Kibana for easy exploration
 client = Elasticsearch::Client.new(log: true);
-rows2.each do |e|
+prows.each do |e|
   client.index(index: 'ads', type: 'ads', id: e["id"], body: build_new_hash(e))
 end
 
