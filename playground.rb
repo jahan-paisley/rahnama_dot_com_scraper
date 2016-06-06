@@ -3,7 +3,7 @@ require 'sqlite3'
 require 'jalalidate'
 
 $db = SQLite3::Database.new 'data/people_ads.db'
-columns, *rows = $db.execute2("select * from ads");
+columns, *rows = $db.execute2("select * from ads where id > ?", 6597);
 prows= rows.map { |e| Hash[columns.zip e] };
 
 def build_new_hash e
