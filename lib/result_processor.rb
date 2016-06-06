@@ -48,6 +48,7 @@ class ResultProcessor
 
   def insert json_results
     json_results.each do |res|
+      res['phones']= res['phones'] || []
       person_id= res['phones'].map { |ph| $db.execute('select person_id from phones where no = ?', ph) }.flatten.first
       if person_id.nil?
         $db.execute('INSERT INTO people (name, email) values (? , ?);', res['name'], res['email'])
