@@ -35,11 +35,39 @@ IO.write('./data/words.json', JSON.pretty_generate(counts.sort_by { |_key, value
 query ={
     "query": {
         "bool": {
-            "must":     { "match": { "ad_text": "نوساز" }},
+            "must": [
+                {
+                    "match": {
+                        "ad_text": "نوساز"
+                    }
+                },
+                {
+                    "match": {
+                        "ad_text": "فول"
+                    }
+                }
+            ],
             "should": [
-                { "match": { "ad_text": "لازم" }},
-                { "match": { "ad_text": "فول" }},
-                { "match": { "ad_text": "زیرقیمت"   }}
+                {
+                    "match": {
+                        "ad_text": "لازم"
+                    }
+                },
+                {
+                    "match": {
+                        "ad_text": "زیرقیمت"
+                    }
+                },
+                {
+                    "match": {
+                        "ad_text": "زیر/ قیمت"
+                    }
+                },
+                {
+                    "match": {
+                        "ad_text": "فوری"
+                    }
+                }
             ]
         }
     }
