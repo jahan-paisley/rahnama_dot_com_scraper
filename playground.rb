@@ -15,7 +15,8 @@ def build_new_hash e
         end]
   end.flatten
   added_pdate = Hash[*converted_map]
-  added_pdate.merge({pdate: JalaliDate.new(Date.parse(e['date'])).strftime("%Y%m%d").to_i})
+  pdate = JalaliDate.new(Date.parse(e['date'])).strftime("%Y%n%d").to_i
+  added_pdate.merge({pdate: pdate})
 end
 
 #Setup elasticsearch and feed it to make it available on Kibana for easy exploration
@@ -35,11 +36,39 @@ IO.write('./data/words.json', JSON.pretty_generate(counts.sort_by { |_key, value
 query ={
     "query": {
         "bool": {
-            "must":     { "match": { "ad_text": "نوساز" }},
+            "must": [
+                {
+                    "match": {
+                        "ad_text": "نوساز"
+                    }
+                },
+                {
+                    "match": {
+                        "ad_text": "فول"
+                    }
+                }
+            ],
             "should": [
-                { "match": { "ad_text": "لازم" }},
-                { "match": { "ad_text": "فول" }},
-                { "match": { "ad_text": "زیرقیمت"   }}
+                {
+                    "match": {
+                        "ad_text": "لازم"
+                    }
+                },
+                {
+                    "match": {
+                        "ad_text": "زیرقیمت"
+                    }
+                },
+                {
+                    "match": {
+                        "ad_text": "زیر/ قیمت"
+                    }
+                },
+                {
+                    "match": {
+                        "ad_text": "فوری"
+                    }
+                }
             ]
         }
     }
