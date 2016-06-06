@@ -3,7 +3,7 @@ require 'sqlite3'
 require 'jalalidate'
 
 $db = SQLite3::Database.new 'data/people_ads.db'
-columns, *rows = $db.execute2("select * from ads where id > ?", 6597);
+columns, *rows = $db.execute2("select * from ads where id > ?", (IO.read("data/.last_exported_id") || '0').to_i );
 prows= rows.map { |e| Hash[columns.zip e] };
 
 def build_new_hash e
@@ -24,6 +24,8 @@ client = Elasticsearch::Client.new(log: true);
 prows.each do |e|
   client.index(index: 'ads', type: 'ads', id: e["id"], body: build_new_hash(e))
 end
+
+IO.write("data/.last_exported_id", prows.sort_by { |e| e['id']}.last['id'])
 
 
 #Count words to build the dictionary and find the frequency of words in ads
