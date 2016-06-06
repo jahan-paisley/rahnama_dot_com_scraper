@@ -3,7 +3,7 @@ require 'sqlite3'
 require 'jalalidate'
 
 $db = SQLite3::Database.new 'data/people_ads.db'
-columns, *rows = $db.execute2("select * from ads");
+columns, *rows = $db.execute2("select * from ads where id > ?", 6597);
 prows= rows.map { |e| Hash[columns.zip e] };
 
 def build_new_hash e
@@ -15,7 +15,7 @@ def build_new_hash e
         end]
   end.flatten
   added_pdate = Hash[*converted_map]
-  added_pdate.merge({pdate: JalaliDate.new(Date.parse(e['date'])).strftime("%Y%m%d").to_i})
+  added_pdate.merge({pdate: JalaliDate.new(Date.parse(e['date'])).strftime("%Y%n%d").to_i})
 end
 
 #Setup elasticsearch and feed it to make it available on Kibana for easy exploration
