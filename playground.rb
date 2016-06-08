@@ -3,7 +3,7 @@ require 'sqlite3'
 require 'jalalidate'
 
 $db = SQLite3::Database.new 'data/people_ads.db'
-columns, *rows = $db.execute2("select * from ads where id > ?", (IO.read("data/.last_exported_id") || '0').to_i );
+columns, *rows = $db.execute2("select * from ads where id > ?", (IO.read("data/.last_exported_id") || '0').to_i);
 prows= rows.map { |e| Hash[columns.zip e] };
 
 def build_new_hash e
@@ -20,12 +20,12 @@ def build_new_hash e
 end
 
 #Setup elasticsearch and feed it to make it available on Kibana for easy exploration
-client = Elasticsearch::Client.new();
+client = Elasticsearch::Client.new(log: true);
 prows.each do |e|
   client.index(index: 'ads', type: 'ads', id: e["id"], body: build_new_hash(e))
 end
 
-IO.write("data/.last_exported_id", prows.sort_by { |e| e['id']}.last['id'])
+IO.write("data/.last_exported_id", prows.sort_by { |e| e['id'] }.last['id'])
 
 
 #(1..10000).each{|e| begin client.delete(index: 'ads', type:'ads', id: e) rescue puts ' '; end}
@@ -73,7 +73,9 @@ query ={
                         "ad_text": "فوری"
                     }
                 }
-            ]
+            ],
+            "minimum_should_match": 1,
+            "boost": 1
         }
     }
 }
