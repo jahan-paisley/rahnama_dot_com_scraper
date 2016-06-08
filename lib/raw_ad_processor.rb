@@ -1,10 +1,10 @@
-class ResultProcessor
+class RawAdProcessor
 
   def initialize(results)
     @results= results
   end
 
-  def write_results
+  def persist_ads
     @results.each_key do |key|
       json_res= []
       @results[key].each do |item|
@@ -20,7 +20,6 @@ class ResultProcessor
     result['phones'] = extract_phones ad
     result['name'] = extract_name ad
     result['ad_text'] = ad[:ad_text]
-    # result['ad_text_normalized'] = normalize ad[:ad_text]
     result['category'] = key
     result
   end
@@ -64,9 +63,5 @@ class ResultProcessor
       $db.execute(sql, pid: person_id, ad: res['ad_text'], cat: res['category'])
     end
   end
-
-  # def normalize
-  #
-  # end
 
 end

@@ -4,7 +4,7 @@ require 'capybara/rspec'
 require 'rspec/expectations'
 require 'rspec/matchers'
 
-require './lib/result_processor'
+require './lib/raw_ad_processor'
 
 class Scrapper
   include RSpec::Matchers
@@ -20,7 +20,7 @@ class Scrapper
     window1= window_opened_by { elem1.click }
     links= IO.readlines('config/links.txt')
     links.each do |link|
-      window2 = open_page(window1, link.chomp)
+      window2 = open_page(window1, link.strip)
       scrap_pages(window2, link)
     end
     @results
@@ -34,7 +34,6 @@ class Scrapper
         page_count = page_all.last.text.to_i
         (1...page_count).each do |i|
           @results[link] = @results[link] + extract_info
-          # puts page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i+1).to_s).text
           page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i+1).to_s).click
         end
       end

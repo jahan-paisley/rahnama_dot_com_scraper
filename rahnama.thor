@@ -16,8 +16,8 @@ class Rahnama < Thor
   def scrap_ads
     CapybaraConfig.init options[:proxy]
     results= Scrapper.new.start
-    processor = ResultProcessor.new results
-    processor.write_results
+    processor = RawAdProcessor.new results
+    processor.persist_ads
   end
 
   desc 'send_telegram', 'Send ads to Telegram Channel'
