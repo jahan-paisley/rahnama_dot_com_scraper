@@ -20,13 +20,15 @@ def build_new_hash e
 end
 
 #Setup elasticsearch and feed it to make it available on Kibana for easy exploration
-client = Elasticsearch::Client.new(log: true);
+client = Elasticsearch::Client.new();
 prows.each do |e|
   client.index(index: 'ads', type: 'ads', id: e["id"], body: build_new_hash(e))
 end
 
 IO.write("data/.last_exported_id", prows.sort_by { |e| e['id']}.last['id'])
 
+
+#(1..10000).each{|e| begin client.delete(index: 'ads', type:'ads', id: e) rescue puts ' '; end}
 
 #Count words to build the dictionary and find the frequency of words in ads
 words= rows.map { |e| e[2] }.map { |e| e.split(/[\s,،]/).select { |e| e.length>1 } }.flatten;
