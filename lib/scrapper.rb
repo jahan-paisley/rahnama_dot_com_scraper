@@ -5,6 +5,7 @@ require 'rspec/expectations'
 require 'rspec/matchers'
 
 require './lib/raw_ad_processor'
+require 'pry'
 
 class Scrapper
   include RSpec::Matchers
@@ -18,38 +19,58 @@ class Scrapper
     visit('/')
     elem1 = first(:css, "a[href*='فروش-املاك-مسكوني']")
     window1= window_opened_by { elem1.click }
-    links= IO.readlines('config/links.txt')
+    links= IO.readlines('config/links.txt').map(&:chomp)
     links.each do |link|
+      expected_count=0
+      within_window(window1) { expected_count= find(:css, "table a[href*='#{link.strip}'] small").text.scan(/\d+/).first.to_i }
       window2 = open_page(window1, link.strip)
-      scrap_pages(window2, link)
+      scrap_pages(window2, link, expected_count)
     end
     @results
   end
 
-  def scrap_pages(window2, link)
-    within_window window2 do
-      @results[link]= @results[link] || []
-      page_all = page.all(:css, '#rahnama_content_c div.pager > ul li a')
-      if (not page_all.empty?)
-        page_count = page_all.last.text.to_i
-        (1...page_count).each do |i|
-          @results[link] = @results[link] + extract_info
-          page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i+1).to_s).click
+  def scrap_pages(window2, link, expected_count)
+    tries = 0
+    begin
+      within_window window2 do
+        @results[link]= @results[link] || []
+        page_all = page.all(:css, '#rahnama_content_c div.pager > ul li a')
+        if (not page_all.empty?)
+          page_count = page_all.last.text.to_i
+          (1..page_count).each do |i|
+            binding.pry
+            page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i).to_s).click if (tries>0)
+            @results[link] = @results[link] + extract_info
+          end
+        end
+        if @results[link].length != expected_count
+          binding.pry
+          raise StandardError.new "error in scraping ads"
         end
       end
-      @results[link] = @results[link] + extract_info
+    rescue StandardError
+      if (tries <= 3)
+        tries +=1
+        @results[link]= []
+        retry
+      else
+        exit(false)
+      end
     end
   end
 
   def extract_info
     find_all(:css, 'div.listing-summary1').map { |e|
-      puts e.text
       begin
-        e_find = e.find(:css, 'p span')
-      rescue
-        e_find = e.find(:css, 'p')
+        link_text = e.find(:css, 'h3 a').text
+        contact_elem = e.find(:css, 'p span')
+      rescue Exception => f
+        puts f.backtrace
+        contact_elem = e.find(:css, 'p')
       end
-      {contact: e_find.text, ad_text: e.find(:css, 'p', :match => :prefer_exact).text}
+      text = e.find(:css, 'p', :match => :prefer_exact).text
+      text = link_text + ' '+ text unless (text.start_with? link_text)
+      {contact: contact_elem.text, ad_text: text}
     }
   end
 
