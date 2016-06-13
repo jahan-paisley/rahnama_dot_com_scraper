@@ -38,23 +38,21 @@ class Scrapper
         if (not page_all.empty?)
           page_count = page_all.last.text.to_i
           (1..page_count).each do |i|
-            binding.pry
-            page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i).to_s).click if (tries>0)
+            page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i).to_s).click unless tries==0 and i==1
             @results[link] = @results[link] + extract_info
           end
         end
         if @results[link].length != expected_count
-          binding.pry
           raise StandardError.new "error in scraping ads"
         end
       end
     rescue StandardError
-      if (tries <= 3)
+      if (tries <= 10)
         tries +=1
         @results[link]= []
         retry
       else
-        exit(false)
+        raise StandardError.new "error in scraping ads"
       end
     end
   end
