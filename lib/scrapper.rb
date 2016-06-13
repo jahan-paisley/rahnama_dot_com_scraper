@@ -42,7 +42,8 @@ class Scrapper
             @results[link] = @results[link] + extract_info
           end
         end
-        if @results[link].length != expected_count
+        if (@results[link].length - expected_count).abs > 1
+          puts "expected #{expected_count}: got #{@results[link].length }"
           raise StandardError.new "error in scraping ads"
         end
       end
@@ -52,9 +53,12 @@ class Scrapper
         @results[link]= []
         retry
       else
-        raise StandardError.new "error in scraping ads"
+        raise StandardError.new "error in scraping ads again"
       end
+    ensure
+      window2.close
     end
+
   end
 
   def extract_info
