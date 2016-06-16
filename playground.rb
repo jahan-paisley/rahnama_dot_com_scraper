@@ -20,9 +20,10 @@ def build_new_hash e
 end
 
 #Setup elasticsearch and feed it to make it available on Kibana for easy exploration
-client = Elasticsearch::Client.new(log: true);
+client = Elasticsearch::Client.new();
+# (1..13000).each{|e| begin client.delete(index: 'ads', type:'ads', id: e) rescue puts ' '; end}
 prows.each do |e|
-  client.index(index: 'ads', type: 'ads', id: e["id"], body: build_new_hash(e))
+  client.index(index: 'ads', type: 'ads', id: e["id"], body: build_new_hash(e));
 end
 
 IO.write("data/.last_exported_id", prows.sort_by { |e| e['id'] }.last['id'])
