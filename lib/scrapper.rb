@@ -34,23 +34,29 @@ class Scrapper
     begin
       within_window window2 do
         @results[link]= @results[link] || []
-        page_all = page.all(:css, '#rahnama_content_c div.pager > ul li a')
-        if (not page_all.empty?)
-          page_count = page_all.last.text.to_i
-          (1..page_count).each do |i|
-            page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i).to_s).click unless tries==0 and i==1
-            @results[link] = @results[link] + extract_info
-          end
+        #page_all = page.all(:css, '#rahnama_content_c div.pager > ul li a')
+        # if (not page_all.empty?)
+        page_count = expected_count % 20 == 0 ? expected_count/20 : expected_count/20 + 1 #page_all.last.text.to_i
+        first_page= current_url
+        (1..page_count).each do |i|
+          #page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i).to_s).click unless tries==0 and i==1
+          @results[link] = @results[link] + extract_info
+          url_gsub = URI.unescape(first_page).gsub(link, "page/#{i+1}/#{link}")
+          visit(URI.escape(url_gsub))
         end
+        # end
         if (@results[link].length - expected_count).abs > 1
           puts "expected #{expected_count}: got #{@results[link].length }"
           raise StandardError.new "error in scraping ads"
         end
       end
-    rescue StandardError
+    rescue StandardError => e
+      puts e
+      puts e.backtrace
       if (tries <= 10)
         tries +=1
         @results[link]= []
+        sleep 1
         retry
       else
         raise StandardError.new "error in scraping ads again"
