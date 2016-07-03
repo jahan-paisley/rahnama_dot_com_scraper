@@ -12,9 +12,10 @@ class Rahnama < Thor
 
   desc 'scrap_ads', 'Scrap the Rahnama.com Real Estate Ads based on provided links.txt'
   option :proxy
+  option :browser
 
   def scrap_ads
-    CapybaraConfig.init options[:proxy]
+    CapybaraConfig.init options[:proxy], options[:browser]
     results= Scrapper.new.start
     processor = RawAdProcessor.new results
     processor.persist_ads
