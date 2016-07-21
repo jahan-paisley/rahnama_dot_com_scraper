@@ -40,6 +40,10 @@ class Scrapper
         first_page= current_url
         (1..page_count).each do |i|
           #page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i).to_s).click unless tries==0 and i==1
+          if i == 1
+            url_gsub = URI.unescape(first_page).gsub(link, "page/1/#{link}")
+            visit(URI.escape(url_gsub))
+          end
           @results[link] = @results[link] + extract_info
           url_gsub = URI.unescape(first_page).gsub(link, "page/#{i+1}/#{link}")
           visit(URI.escape(url_gsub))
