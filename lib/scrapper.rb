@@ -34,12 +34,9 @@ class Scrapper
     begin
       within_window window2 do
         @results[link]= @results[link] || []
-        #page_all = page.all(:css, '#rahnama_content_c div.pager > ul li a')
-        # if (not page_all.empty?)
-        page_count = expected_count % 20 == 0 ? expected_count/20 : expected_count/20 + 1 #page_all.last.text.to_i
+        page_count = (expected_count / 20.0).ceil
         first_page= current_url
         (1..page_count).each do |i|
-          #page.find(:css, '#rahnama_content_c div.pager > ul li a', :text => (i.to_i).to_s).click unless tries==0 and i==1
           if i == 1
             url_gsub = URI.unescape(first_page).gsub(link, "page/1/#{link}")
             visit(URI.escape(url_gsub))
@@ -48,8 +45,7 @@ class Scrapper
           url_gsub = URI.unescape(first_page).gsub(link, "page/#{i+1}/#{link}")
           visit(URI.escape(url_gsub))
         end
-        # end
-        if (@results[link].length - expected_count).abs > 1
+        if (@results[link].length - expected_count).abs > 2
           puts "expected #{expected_count}: got #{@results[link].length }"
           raise StandardError.new "error in scraping ads"
         end
