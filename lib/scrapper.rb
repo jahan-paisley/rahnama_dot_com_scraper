@@ -31,11 +31,12 @@ class Scrapper
 
   def scrap_pages(window2, link, expected_count)
     tries = 0
+    first_page= nil
     begin
       within_window window2 do
         @results[link]= @results[link] || []
         page_count = (expected_count / 20.0).ceil
-        first_page= current_url
+        first_page= first_page || current_url
         (1..page_count).each do |i|
           if i == 1
             url_gsub = URI.unescape(first_page).gsub(link, "page/1/#{link}")
@@ -46,6 +47,7 @@ class Scrapper
           visit(URI.escape(url_gsub))
         end
         if (@results[link].length - expected_count).abs > 2
+          binding.pry
           puts "expected #{expected_count}: got #{@results[link].length }"
           raise StandardError.new "error in scraping ads"
         end
