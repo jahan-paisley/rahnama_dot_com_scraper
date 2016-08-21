@@ -47,7 +47,6 @@ class Scrapper
           visit(URI.escape(url_gsub))
         end
         if (@results[link].length - expected_count).abs > 2
-          binding.pry
           puts "expected #{expected_count}: got #{@results[link].length }"
           raise StandardError.new "error in scraping ads"
         end
