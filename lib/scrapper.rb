@@ -16,7 +16,7 @@ class Scrapper
   end
 
   def start
-    visit('/')
+    visit('http://www.rahnama.com/cat/index/id/34807/%D8%A7%D9%85%D9%84%D8%A7%D9%83-%D8%AA%D9%87%D8%B1%D8%A7%D9%86')
     elem1 = first(:css, "a[href*='فروش-املاك-مسكوني']")
     window1= window_opened_by { elem1.click }
     links= IO.readlines('config/links.txt').map(&:chomp)
