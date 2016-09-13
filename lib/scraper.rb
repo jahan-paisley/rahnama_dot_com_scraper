@@ -7,7 +7,7 @@ require 'rspec/matchers'
 require './lib/raw_ad_processor'
 require 'pry'
 
-class Scrapper
+class Scraper
   include RSpec::Matchers
   include Capybara::DSL
 
@@ -16,7 +16,7 @@ class Scrapper
   end
 
   def start
-    visit('http://www.rahnama.com/cat/index/id/34807/%D8%A7%D9%85%D9%84%D8%A7%D9%83-%D8%AA%D9%87%D8%B1%D8%A7%D9%86')
+    visit('/')
     elem1 = first(:css, "a[href*='فروش-املاك-مسكوني']")
     window1= window_opened_by { elem1.click }
     links= IO.readlines('config/links.txt').map(&:chomp)
@@ -46,7 +46,7 @@ class Scrapper
           url_gsub = URI.unescape(first_page).gsub(link, "page/#{i+1}/#{link}")
           visit(URI.escape(url_gsub))
         end
-        if (@results[link].length - expected_count).abs > 2
+        if (@results[link].length - expected_count).abs > 1
           puts "expected #{expected_count}: got #{@results[link].length }"
           raise StandardError.new "error in scraping ads"
         end

@@ -8,3 +8,5 @@ gem 'telegram-bot-ruby'
 gem 'pry'
 gem 'jalalidate'
 gem 'elasticsearch'
+gem 'whenever'
+

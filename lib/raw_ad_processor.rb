@@ -5,6 +5,7 @@ class RawAdProcessor
   end
 
   def persist_ads
+    IO.write('./data/data-'+JalaliDate.new(Date.today).strftime("%Y%n%d")+'.json', @results.to_json, mode:'a')
     @results.each_key do |key|
       json_res= []
       @results[key].each do |item|

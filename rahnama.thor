@@ -2,7 +2,8 @@
 
 require 'thor'
 require './lib/capybara_config'
-require './lib/scrapper'
+require './lib/scraper'
+require './lib/plain_scraper'
 require './lib/sqlite_config'
 require './lib/telegram_bot'
 require 'pry'
@@ -10,26 +11,28 @@ require 'json'
 
 class Rahnama < Thor
 
-  desc 'scrap_ads', 'Scrap the Rahnama.com Real Estate Ads based on provided links.txt'
+
   option :proxy
   option :browser
-
+  desc 'scrap_ads', 'Scrap the Rahnama.com Real Estate Ads based on provided links.txt'
   def scrap_ads
-    CapybaraConfig.init options[:proxy], options[:browser]
-    results= Scrapper.new.start
+    if options[:browser] == "plain"
+      results= PlainScraper.new.start
+    else
+      CapybaraConfig.init options[:proxy], options[:browser]
+      results= Scraper.new.start
+    end
     processor = RawAdProcessor.new results
     processor.persist_ads
   end
 
-  desc 'send_telegram', 'Send ads to Telegram Channel'
-
+  desc 'send', 'Send ads to Telegram Channel'
   def send
     bot= TelegramBot.new
     bot.send
   end
 
-  desc 'gen_dic', 'Generaet Dictionary based on Ads words'
-
+  desc 'generate_dic', 'Generaet Dictionary based on Ads words'
   def generate_dic
     rows= $db.execute('select * from ads')
     words= rows.map { |e| e[2] }.map { |e| e.split(/[\s,،]/).select { |e| e.length>1 } }.flatten

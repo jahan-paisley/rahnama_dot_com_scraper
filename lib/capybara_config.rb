@@ -2,11 +2,10 @@ require 'capybara'
 require 'selenium-webdriver'
 
 class CapybaraConfig
-  def self.init proxy=nil, browser= "chrome"
+  def self.init proxy=nil, browser
     Capybara.run_server = false
     Capybara.app_host = 'http://www.rahnama.com'
     Capybara.default_max_wait_time = 15
-
     if browser == "firefox"
       Capybara.register_driver :firefox do |app|
         profile = Selenium::WebDriver::Chrome::Profile.new
