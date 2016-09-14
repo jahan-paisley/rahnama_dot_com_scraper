@@ -15,7 +15,6 @@ class PlainScraper
   end
 
   def start
-    binding.pry
     doc = Nokogiri::HTML(open(@server))
     href = doc.css("a[href*='فروش-املاك-مسكوني']").map { |e| e['href'] }.first
     home_doc= Nokogiri::HTML(open(URI.escape(href).to_s))
