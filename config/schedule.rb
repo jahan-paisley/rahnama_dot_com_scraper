@@ -20,9 +20,9 @@
 # Learn more: http://github.com/javan/whenever
 
 every 1.day, :at => '1:30 pm' do
-  command "thor rahnama:scrap_ads --browser=plain"
+  command "cd /home/gusto/projects/rahnama_dot_com_scraper && thor rahnama:scrap_ads --browser=plain"
 end
 
 every 1.day, :at => '2:30 pm' do
-  command "thor rahnama:send_daily_digest"
+  command "cd /home/gusto/projects/rahnama_dot_com_scraper && thor rahnama:send_daily_digest"
 end

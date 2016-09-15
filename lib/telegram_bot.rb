@@ -1,7 +1,10 @@
 require 'jalalidate'
 require 'telegram/bot'
-require './lib/random_gaussian'
 require 'json'
+require 'bitly'
+require './lib/random_gaussian'
+require './lib/elasticsearch_client'
+
 
 class TelegramBot
 
@@ -43,15 +46,22 @@ class TelegramBot
     retry
   end
 
+  def bitly_shorten_url
+    Bitly.use_api_version_3
+    Bitly.configure do |config|
+      config.api_version = 3
+      config.access_token = ENV['bitly_key']
+    end
+    today = Date.today.strftime("%Y-%m-%d")
+    Bitly.client.shorten("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T07:00:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
+  end
+
   def send_daily_digest
     search = $elasticsearch_client.search index: 'ads', body: {query: {match: {pdate: {query: JalaliDate.new(Date.today).strftime("%Y%n%d").to_i, type: "phrase"}}}}
     ads_count = search["hits"]["total"]
+    ptoday= JalaliDate.new(Date.today).strftime("#%A_%e_%b")
     if(ads_count>0)
-      googl_client = Googl.client(ENV['googl_email'], 'googl_password')
-      today = Date.today.strftime("%Y-%m-%d")
-      ptoday= JalaliDate.new(Date.parse(ad[4])).strftime("#%A_%e_%b")
-      url = googl_client.shorten("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T07:00:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
-      short_url= url.short_url
+      short_url= bitly_shorten_url
       Telegram::Bot::Client.run(@token) do |bot|
         bot.api.send_message(chat_id: '@hamshahri_ads', text: """
 لیست آگهی های #{ptoday}

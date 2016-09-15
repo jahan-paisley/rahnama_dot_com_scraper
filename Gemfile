@@ -9,5 +9,5 @@ gem 'pry'
 gem 'jalalidate'
 gem 'elasticsearch'
 gem 'whenever'
-gem 'googl'
+gem 'bitly'
 
