@@ -32,6 +32,17 @@ class Rahnama < Thor
     bot.send
   end
 
+  desc 'update_elasticsearch', 'Update Elasticsearch data'
+  def update_elasticsearch
+      ElasticsearchClient.import_ads
+  end
+
+  desc 'send_daily_digest', 'Send ads to Telegram Channel'
+  def send_daily_digest
+    bot= TelegramBot.new
+    bot.send_daily_digest
+  end
+
   desc 'generate_dic', 'Generaet Dictionary based on Ads words'
   def generate_dic
     rows= $db.execute('select * from ads')

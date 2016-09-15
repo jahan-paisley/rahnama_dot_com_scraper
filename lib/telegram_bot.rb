@@ -43,6 +43,39 @@ class TelegramBot
     retry
   end
 
+  def send_daily_digest
+    tries= tries||0
+    ad1= nil
+
+    search = $elasticsearch_client.search index: 'ads', body: {
+        query: {
+            match: {
+                pdate: {
+                    query: JalaliDate.new(Date.today).strftime("%Y%n%d").to_i,
+                    type: "phrase"
+                }
+            }
+        }
+    }
+
+    if(search.hits>0)
+      googl_client = Googl.client(ENV['googl_email'], 'googl_password')
+      today = Date.today.strftime("%Y-%m-%d")
+      ptoday= JalaliDate.new(Date.parse(ad[4])).strftime("#%A_%e_%b")
+      ads_count=search.hits
+      url = googl_client.shorten("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T07:00:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
+      short_url= url.short_url
+      Telegram::Bot::Client.run(@token) do |bot|
+        bot.api.send_message(chat_id: '@hamshahri_ads', text: """
+لیست آگهی های #{ptoday}
+#{short_url}
+شامل #{ads_count} آگهی از زیر ۴۰ تا ۱۰۰ متر
+""")
+      end
+
+    end
+  end
+
   def build_message(ad)
     ad_text = ad[2].gsub(/\d{8,11}/, '')
     aread_codes= JSON.parse(IO.read(File.expand_path("../../data/area_codes.json", __FILE__)))
@@ -53,9 +86,10 @@ class TelegramBot
     rescue
     end if phone
     name = @people.select { |e| e[0] == ad[1] }.map { |e| e[1] }.first
+    ptoday= JalaliDate.new(Date.parse(ad[4])).strftime("#%A_%e_%b")
     <<-MSG
 #{ad[0]}
-#{JalaliDate.new(Date.parse(ad[4])).strftime("#%A_%e_%b")} #{"\nتعداد دفعات آگهی شدن: "+ ad[3].to_s if ad[3]>1}
+#{ptoday} #{"\nتعداد دفعات آگهی شدن: "+ ad[3].to_s if ad[3]>1}
 #{ad_text}
 ##{ad[5].gsub('-', '_')} #{"\n" + name if name} #{"\n#" + area.gsub(' ', '_') if area}
 #{ad[2].scan(/\d{8,11}/).map { |e| e.length == 8 ? '021'+e : e }.join(' ')}
