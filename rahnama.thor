@@ -11,7 +11,6 @@ require 'json'
 
 class Rahnama < Thor
 
-
   option :proxy
   option :browser
   desc 'scrap_ads', 'Scrap the Rahnama.com Real Estate Ads based on provided links.txt'

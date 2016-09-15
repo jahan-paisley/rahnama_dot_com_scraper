@@ -46,15 +46,10 @@ class TelegramBot
     retry
   end
 
-  def bitly_shorten_url
-    Bitly.use_api_version_3
-    Bitly.configure do |config|
-      config.api_version = 3
-      config.access_token = ENV['bitly_key']
-    end
+  def google_shorten_url
     today = Date.today.strftime("%Y-%m-%d")
-    u= Bitly.client.shorten("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T00:30:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
-    u.short_url
+    Google::UrlShortener::Base.api_key = ENV['google_api_key']
+    Google::UrlShortener.shorten!("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T00:30:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
   end
 
   def send_daily_digest
@@ -62,7 +57,7 @@ class TelegramBot
     ads_count = search["hits"]["total"]
     ptoday= JalaliDate.new(Date.today).strftime("#%A_%e_%b")
     if(ads_count>0)
-      short_url= bitly_shorten_url
+      short_url= google_shorten_url
       Telegram::Bot::Client.run(@token) do |bot|
         bot.api.send_message(chat_id: '@hamshahri_ads', text: <<-MSG
 لیست آگهی های #{ptoday}
