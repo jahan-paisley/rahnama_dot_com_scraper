@@ -53,7 +53,8 @@ class TelegramBot
       config.access_token = ENV['bitly_key']
     end
     today = Date.today.strftime("%Y-%m-%d")
-    Bitly.client.shorten("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T07:00:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
+    u= Bitly.client.shorten("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T00:30:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
+    u.short_url
   end
 
   def send_daily_digest
@@ -63,11 +64,12 @@ class TelegramBot
     if(ads_count>0)
       short_url= bitly_shorten_url
       Telegram::Bot::Client.run(@token) do |bot|
-        bot.api.send_message(chat_id: '@hamshahri_ads', text: """
+        bot.api.send_message(chat_id: '@hamshahri_ads', text: <<-MSG
 لیست آگهی های #{ptoday}
 #{short_url}
 شامل #{ads_count} آگهی از زیر ۴۰ تا ۱۰۰ متر
-""")
+MSG
+)
       end
 
     end
