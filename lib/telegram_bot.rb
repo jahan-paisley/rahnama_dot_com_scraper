@@ -44,25 +44,12 @@ class TelegramBot
   end
 
   def send_daily_digest
-    tries= tries||0
-    ad1= nil
-
-    search = $elasticsearch_client.search index: 'ads', body: {
-        query: {
-            match: {
-                pdate: {
-                    query: JalaliDate.new(Date.today).strftime("%Y%n%d").to_i,
-                    type: "phrase"
-                }
-            }
-        }
-    }
-
-    if(search.hits>0)
+    search = $elasticsearch_client.search index: 'ads', body: {query: {match: {pdate: {query: JalaliDate.new(Date.today).strftime("%Y%n%d").to_i, type: "phrase"}}}}
+    ads_count = search["hits"]["total"]
+    if(ads_count>0)
       googl_client = Googl.client(ENV['googl_email'], 'googl_password')
       today = Date.today.strftime("%Y-%m-%d")
       ptoday= JalaliDate.new(Date.parse(ad[4])).strftime("#%A_%e_%b")
-      ads_count=search.hits
       url = googl_client.shorten("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T07:00:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
       short_url= url.short_url
       Telegram::Bot::Client.run(@token) do |bot|

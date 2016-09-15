@@ -1,6 +1,6 @@
 require 'elasticsearch'
 require 'jalalidate'
-require '../lib/sqlite_config'
+require './lib/sqlite_config'
 
 $elasticsearch_client = Elasticsearch::Client.new()
 
