@@ -5,7 +5,6 @@ require 'google_url_shortener'
 require './lib/random_gaussian'
 require './lib/elasticsearch_client'
 
-
 class TelegramBot
 
   def initialize
@@ -46,10 +45,10 @@ class TelegramBot
     retry
   end
 
-  def self.google_shorten_url
+  def google_shorten_url
     today = Date.today.strftime("%Y-%m-%d")
     Google::UrlShortener::Base.api_key = ENV['google_api_key']
-    Google::UrlShortener.shorten!("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T00:30:00.000Z',mode:absolute,to:'#{today}T23:00:00.000Z'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
+    Google::UrlShortener.shorten!("http://adventures.gusto.ir/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:'#{today}T00:30:00.000',mode:absolute,to:'#{today}T23:00:00.000'))&_a=(columns:!(ad_text,category,counts,pdate,id,_score),index:ads,interval:h,query:(query_string:(analyze_wildcard:!t,query:'*')),sort:!(id,asc))")
   end
 
   def send_daily_digest
