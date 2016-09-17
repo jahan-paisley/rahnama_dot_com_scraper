@@ -1,6 +1,6 @@
 # rahnama.com scraper 
 
-A Simple Web Automation Script based on Capybara, Slenium, telegram-bot-ruby and Thor .
+A Simple Web Automation Script based on Capybara-Slenium/Nokogiri, telegram-bot-ruby and Thor and google_url_shortener.
 ---
 
 
@@ -8,14 +8,15 @@ A Simple Web Automation Script based on Capybara, Slenium, telegram-bot-ruby and
   ```
   bundle install
   ```
-#### Scrap Ads
+#### Command list
   ```
-  thor rahnama:scrap_ads
-  ```
-#### Send telegram messages
-  ```
-  export telegram_bot_token="Your Telegram Bot Token"
-  thor rahnama:send
+  thor list
+  thor rahnama:generate_dic          # Generaet Dictionary based on Ads words
+  thor rahnama:help [COMMAND]        # Describe available commands or one specific command
+  thor rahnama:scrap_ads             # Scrap the Rahnama.com Real Estate Ads based on provided links.txt
+  thor rahnama:send                  # Send ads to Telegram Channel
+  thor rahnama:send_daily_digest     # Send ads to Telegram Channel
+  thor rahnama:update_elasticsearch  # Update Elasticsearch data
   ```
 
 ### Output
@@ -26,5 +27,5 @@ I've setup an ElasticSearch and [Kibana](http://adventures.gusto.ir/app/kibana#/
 
 ### TODOS:
 * Save the logo and the filename of bmp file in ads and associate them with advertisers
-* Tokenize ads to extract important and mostly used keywords
-* Make the process scheduled and automatic using `whenever` gem
+* ~~Tokenize ads to extract important and mostly used keywords~~
+* ~~Make the process scheduled and automatic using `whenever` gem~~
