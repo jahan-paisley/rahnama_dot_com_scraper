@@ -5,7 +5,7 @@
 
 # Example:
 #
-# set :output, "/path/to/my/cron_log.log"
+set :output, "cron_log.log"
 #
 # every 2.hours do
 #   command "/usr/bin/some_great_command"
@@ -21,6 +21,10 @@
 
 every 1.day, :at => '1:30 pm' do
   command "cd /home/gusto/projects/rahnama_dot_com_scraper && thor rahnama:scrap_ads --browser=plain"
+end
+
+every 1.day, :at => '2:00 pm' do
+  command "cd /home/gusto/projects/rahnama_dot_com_scraper && thor rahnama:update_elasticsearch"
 end
 
 every 1.day, :at => '2:30 pm' do
