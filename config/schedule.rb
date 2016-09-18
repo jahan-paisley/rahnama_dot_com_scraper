@@ -6,6 +6,8 @@
 # Example:
 #
 set :output, "cron_log.log"
+set :job_template, "zsh -l -c ':job'"
+
 #
 # every 2.hours do
 #   command "/usr/bin/some_great_command"
@@ -20,13 +22,5 @@ set :output, "cron_log.log"
 # Learn more: http://github.com/javan/whenever
 
 every 1.day, :at => '1:30 pm' do
-  command "cd /home/gusto/projects/rahnama_dot_com_scraper && thor rahnama:scrap_ads --browser=plain"
-end
-
-every 1.day, :at => '2:00 pm' do
-  command "cd /home/gusto/projects/rahnama_dot_com_scraper && thor rahnama:update_elasticsearch"
-end
-
-every 1.day, :at => '2:30 pm' do
-  command "cd /home/gusto/projects/rahnama_dot_com_scraper && thor rahnama:send_daily_digest"
+  command "cd /home/gusto/projects/rahnama_dot_com_scraper && thor rahnama:scrap_ads --browser=plain && thor rahnama:update_elasticsearch && thor rahnama:send_daily_digest"
 end
