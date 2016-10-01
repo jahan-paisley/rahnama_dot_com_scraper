@@ -59,9 +59,13 @@ class TelegramBot
       short_url= google_shorten_url
       Telegram::Bot::Client.run(@token) do |bot|
         bot.api.send_message(chat_id: '@hamshahri_ads', text: <<-MSG
+🏘🏢🏬
+
 لیست آگهی های #{ptoday}
 #{short_url}
 شامل #{ads_count} آگهی از زیر ۴۰ تا ۱۰۰ متر
+
+🏘🏢🏬
 MSG
 )
       end
