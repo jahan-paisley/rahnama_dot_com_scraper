@@ -31,8 +31,6 @@ class RawAdProcessor
   def self.remove_duplicate_leading ad_text
     (0..ad_text.length-1).reverse_each do |i|
       if(ad_text[i..-1].strip.start_with?(ad_text[0...i].strip) and i>5)
-        puts ad_text[i..-1]
-        puts ad_text
         return ad_text[i..-1].strip
       end
     end
