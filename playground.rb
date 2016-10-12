@@ -16,8 +16,19 @@ def build_new_hash e
   end.flatten
   added_pdate = Hash[*converted_map]
   pdate = JalaliDate.new(Date.parse(e['date'])).strftime("%Y%n%d").to_i
-  added_pdate.merge({pdate: pdate})
+  added_pdate.merge({pdate: pdate, area: find_aread_code(e['phone'])})
 end
+
+$aread_codes= JSON.parse(IO.read(File.expand_path("../../data/area_codes.json", __FILE__)))
+
+def find_aread_code phone
+  begin
+    area = $aread_codes.values.flatten.select { |e| e.values.flatten.include?(phone[0...4].to_i) }.first.keys.first
+  rescue
+  end if phone
+  return area
+end
+
 
 #Setup elasticsearch and feed it to make it available on Kibana for easy exploration
 client = Elasticsearch::Client.new();
