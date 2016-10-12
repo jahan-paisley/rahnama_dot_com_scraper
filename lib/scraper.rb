@@ -71,13 +71,13 @@ class Scraper
   def extract_info
     find_all(:css, 'div.listing-summary1').map { |e|
       begin
-        link_text = e.find(:css, 'h3 a').text
+        link_text = e.find(:css, 'h3 a').text.strip
         contact_elem = e.find(:css, 'p span')
       rescue Exception => f
         puts f.backtrace
         contact_elem = e.find(:css, 'p')
       end
-      text = e.find(:css, 'p', :match => :prefer_exact).text
+      text = e.find(:css, 'p', :match => :prefer_exact).text.gsub(/[\r\n\t]/, "").gsub("  ", " ")
       text = link_text + ' '+ text unless (text.start_with? link_text)
       {contact: contact_elem.text, ad_text: text}
     }

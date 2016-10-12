@@ -61,17 +61,20 @@ class PlainScraper
   end
 
   def extract_info doc
+
     doc.css('div.listing-summary1').map { |e|
       begin
-        link_text = e.css('h3 a').first.text
+        link_text = e.css('h3 a').first.text.gsub(/[\r\n\t]/, " ").gsub(/\s+/, " ").strip
         contact_elem = e.css('p span').first
       rescue Exception => f
         puts f.backtrace
         contact_elem = e.css('p')
       end
-      text = e.css('p').first.text
+      ad_text_elem = e.css('p').first
+      text = ad_text_elem.text.gsub(/[\r\n\t]/, " ").gsub(/\s+/, " ").strip
       text = link_text + ' '+ text unless (text.start_with? link_text)
-      {contact: contact_elem.text, ad_text: text}
+      contact_text= contact_elem.text.gsub(/[\r\n\t]/, " ").gsub(/\s+/, " ").strip
+      {contact: contact_text, ad_text: text}
     }
   end
 
