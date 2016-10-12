@@ -1,10 +1,12 @@
 require 'elasticsearch'
 require 'jalalidate'
 require './lib/sqlite_config'
+require './lib/area_code_helper'
 
 $elasticsearch_client = Elasticsearch::Client.new()
 
 class ElasticsearchClient
+  include AreadCodeHelper
 
   def self.import_ads
     columns, *rows = $db.execute2("select * from ads where id > ?", (IO.read("data/.last_exported_id") || '0').to_i)
@@ -28,7 +30,7 @@ class ElasticsearchClient
     end.flatten
     added_pdate = Hash[*converted_map]
     pdate = JalaliDate.new(Date.parse(row['date'])).strftime("%Y%n%d").to_i
-    added_pdate.merge({pdate: pdate})
+    added_pdate.merge({pdate: pdate, area: find_area_code(row['phone'])})
   end
 
 end
