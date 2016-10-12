@@ -1,10 +1,4 @@
-require 'date'
-require 'capybara/dsl'
-require 'capybara/rspec'
-require 'rspec/expectations'
-require 'rspec/matchers'
 require './lib/raw_ad_processor'
-require 'pry'
 require 'open-uri'
 
 class PlainScraper

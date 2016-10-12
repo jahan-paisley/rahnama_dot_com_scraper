@@ -1,5 +1,3 @@
-require 'json'
-
 class RawAdProcessor
 
   def initialize(results)
@@ -7,28 +5,13 @@ class RawAdProcessor
   end
 
   def persist_ads
-=begin
-    IO.write('./data/data-'+JalaliDate.new(Date.today).strftime("%Y%n%d%H%M%S")+'.json', @results.to_json, mode:'a')
-    return
-=end
-    ["data-13950622.json","data-13950623.json","data-13950624.json",
-     "data-13950625.json","data-13950627.json","data-13950628.json","data-13950629.json","data-13950631.json",
-     "data-13950701.json","data-13950703.json","data-13950704.json","data-13950705.json","data-13950706.json",
-     "data-13950707.json","data-13950708.json","data-13950710.json","data-13950711.json", "data-13950712.json",
-     "data-13950713.json","data-13950714.json", "data-13950717.json","data-13950718.json",
-     "data-13950719.json"].each do |file|
-      @results= JSON.parse(IO.read("./data/"+ file))
-      @results.each_key do |key|
-        json_res= []
-        @results[key].each do |item|
-          json_res << process_item(Hash[item.map{|(k,v)| [k.to_sym,v]}], key)
-        end
-
-        date= JalaliDate.new(file.scan(/(?<=data-)\d{4}/)[0].to_i,
-                             file.scan(/(?<=data-\d{4})\d{2}/)[0].to_i,
-                             file.scan(/(?<=data-\d{6})\d{2}/)[0].to_i).to_g.strftime("%Y-%m-%d")+" 13:00:00"
-        insert json_res, date
+    IO.write('./data/data-'+JalaliDate.new(Date.today).strftime("%Y%n%d")+'.json', @results.to_json, mode:'a')
+    @results.each_key do |key|
+      json_res= []
+      @results[key].each do |item|
+        json_res << process_item(item, key)
       end
+      insert json_res
     end
   end
 
@@ -77,7 +60,7 @@ class RawAdProcessor
     end
   end
 
-  def insert json_results, date
+  def insert json_results
     json_results.each do |res|
       res['phones']= res['phones'] || []
       person_id= res['phones'].map { |ph| $db.execute('select person_id from phones where no = ?', ph) }.flatten.first
@@ -89,10 +72,10 @@ class RawAdProcessor
       sql= <<-SQL
         insert or replace into
             ads(person_id, ad_text, counts, category, date)
-            values (:pid , :ad_text, COALESCE((select counts from ads where person_id = :pid and ad_text= :ad_text),0) + 1, :cat, :date)
+            values (:pid , :ad, COALESCE((select counts from ads where person_id = :pid and ad_text= :ad),0) + 1, :cat, current_timestamp)
       SQL
 
-      $db.execute(sql, pid: person_id, ad_text: res['ad_text'], cat: res['category'], date: date)
+      $db.execute(sql, pid: person_id, ad: res['ad_text'], cat: res['category'])
     end
   end
 
