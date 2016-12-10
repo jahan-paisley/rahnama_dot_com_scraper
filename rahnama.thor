@@ -4,6 +4,7 @@ require 'thor'
 require './lib/capybara_config'
 require './lib/scraper'
 require './lib/plain_scraper'
+require './lib/plain_scraper_for_rental'
 require './lib/sqlite_config'
 require './lib/telegram_bot'
 require 'pry'
@@ -17,6 +18,20 @@ class Rahnama < Thor
   def scrap_ads
     if options[:browser] == "plain"
       results= PlainScraper.new.start
+    else
+      CapybaraConfig.init options[:proxy], options[:browser]
+      results= Scraper.new.start
+    end
+    processor = RawAdProcessor.new results
+    processor.persist_ads
+  end
+
+  option :proxy
+  option :browser
+  desc 'scrap_rental_ads', 'Scrap the Rahnama.com Real Estate Ads based on provided links.txt'
+  def scrap_rental_ads
+    if options[:browser] == "plain"
+      results= PlainScraperForRental.new.start
     else
       CapybaraConfig.init options[:proxy], options[:browser]
       results= Scraper.new.start
