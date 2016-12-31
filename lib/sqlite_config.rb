@@ -23,6 +23,17 @@ $db.execute <<-SQL
 SQL
 
 $db.execute <<-SQL
+  create table IF NOT EXISTS ads_for_rental
+          (id INTEGER PRIMARY KEY AUTOINCREMENT,
+           person_id integer,
+           ad_text varchar(256),
+           counts integer,
+           date datetime DEFAULT current_timestamp,
+           category varchar(256)
+          );
+SQL
+
+$db.execute <<-SQL
   CREATE UNIQUE INDEX IF NOT EXISTS ADS_AD_TEXT_INDEX ON ads (ad_text);
 SQL
 
