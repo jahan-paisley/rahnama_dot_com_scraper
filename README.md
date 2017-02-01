@@ -1,6 +1,6 @@
 # rahnama.com scraper 
 
-A Simple Web Automation Script based on Capybara-Slenium/Nokogiri, telegram-bot-ruby and Thor and google_url_shortener.
+A Simple Web Automation Script based on Capybara-Slenium/Nokogiri, telegram-bot-ruby,Thor and google_url_shortener.
 ---
 
 
