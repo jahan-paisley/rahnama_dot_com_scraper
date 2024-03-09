@@ -3,6 +3,8 @@
 A Simple Web Automation Script based on Capybara-Slenium/Nokogiri, telegram-bot-ruby,Thor and google_url_shortener.
 ---
 
+###
+Sqlite Database containing ~100K listings: https://github.com/jahan-paisley/rahnama_dot_com_scraper/blob/master/data/people_ads.db
 
 ### How to run:
   ```
